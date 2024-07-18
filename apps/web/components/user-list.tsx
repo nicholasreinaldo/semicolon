@@ -1,6 +1,8 @@
+import { followsAtom } from "@/lib/atom";
 import { PublicUserResolved } from "@semicolon/api/schema";
+import { Avatar, AvatarFallback, AvatarImage } from "@semicolon/ui/avatar";
 import { Button } from "@semicolon/ui/button";
-import { Separator } from "@semicolon/ui/separator";
+import { User } from "lucide-react";
 import React from "react";
 
 interface UserListProps {
@@ -21,21 +23,35 @@ export function UserList({
   hasNextPage,
 }: UserListProps) {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex w-full flex-col items-center">
       {users.map((user) => (
-        <div key={user.id} className="flex flex-row items-center gap-4 p-4">
-          <img
-            src={user.avatar}
-            alt={`${user.username}'s profile picture`}
-            className="h-12 w-12 rounded-full"
-          />
-          <div className="flex flex-col">
-            <p className="font-bold">{user.username}</p>
-            <p className="text-sm text-gray-500">{user.name}</p>
+        <div
+          key={user.id}
+          className="flex w-full max-w-full flex-row items-start p-4"
+        >
+          <Avatar className="size-11">
+            <AvatarImage width={300} height={300} src={user.avatar} />
+            <AvatarFallback>
+              <User />
+            </AvatarFallback>
+          </Avatar>
+          <div className="ml-4 flex flex-grow flex-col">
+            <div className="flex justify-between">
+              <div>
+                <p className="font-bold">{user.name}</p>
+                <p className="text-sm text-gray-500">@{user.username}</p>
+              </div>
+              <Button
+                type="submit"
+                className="cursor-pointer rounded-full font-bold text-black"
+              >
+                Follow
+              </Button>
+            </div>
+            <div className="mt-2">
+              <p>{user.bio}</p>
+            </div>
           </div>
-          <Button variant="outline" size="sm">
-            Follow
-          </Button>
         </div>
       ))}
       {loading && <p>Loading...</p>}
