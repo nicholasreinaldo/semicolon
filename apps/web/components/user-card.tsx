@@ -99,7 +99,7 @@ export default function UserCard(user: PublicUserResolved) {
           </div>
         </div>
         <div className="mt-2">
-          <p>{bio}</p>
+          {bio && <p className="text-[15px]">{bio}</p>}
         </div>
       </div>
       <Button
