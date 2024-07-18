@@ -1,4 +1,3 @@
-// file name and directory: root/apps/web/components/search-bar.tsx
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,8 +8,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-// file name and directory: root/apps/web/components/search-bar.tsx
 
 const SearchSchema = z.object({
   query: z.string().min(1),

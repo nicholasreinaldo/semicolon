@@ -2,7 +2,7 @@
 
 import { PostFeed } from "@/components/post-feed";
 import { UserList } from "@/components/user-list";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import { PostResolved, PublicUserResolved } from "@semicolon/api/schema";
 import { skipToken } from "@tanstack/react-query";
 import { redirect, useSearchParams } from "next/navigation";
