@@ -1,3 +1,4 @@
+// file name and directory: root/packages/api/routes/post.ts
 import { router, publicProcedure, userProcedure } from "../trpc";
 import {
   PostResolvedSchema,
@@ -339,7 +340,7 @@ export const post = router({
               eb
                 .selectFrom("Post")
                 .select("Post.id")
-                .where("Post.id", "=", cursor),
+                .where("Post.id", "=", eb.cast<string>(eb.val(cursor), "uuid")),
             );
 
             switch (sortBy) {
@@ -347,7 +348,11 @@ export const post = router({
                 const cursorQuery = eb
                   .selectFrom("Post")
                   .select("Post.createdAt")
-                  .where("Post.id", "=", cursor);
+                  .where(
+                    "Post.id",
+                    "=",
+                    eb.cast<string>(eb.val(cursor), "uuid"),
+                  );
 
                 return or([
                   and([eb("Post.createdAt", "=", cursorQuery), tieBreaker]),
@@ -358,7 +363,11 @@ export const post = router({
                 const cursorQuery = eb
                   .selectFrom("Post")
                   .select(tsRank.as("rank"))
-                  .where("Post.id", "=", cursor);
+                  .where(
+                    "Post.id",
+                    "=",
+                    eb.cast<string>(eb.val(cursor), "uuid"),
+                  );
 
                 return or([
                   and([eb(tsRank, "=", cursorQuery), tieBreaker]),
@@ -370,13 +379,6 @@ export const post = router({
         }
 
         const results = await dbQuery.execute();
-
-        if (results.length === 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "No results matched",
-          });
-        }
 
         let nextCursor: typeof cursor | undefined;
 
@@ -454,32 +456,13 @@ export const post = router({
   update: userProcedure
     .meta({ openapi: { method: "POST", path: "/posts/{id}" } })
     .input(
-      z
-        .object({
-          id: ShortToUUID,
-          content: z.string().optional(),
-          media: z.array(z.string().url()).max(4),
-        })
-        .refine(
-          ({ content, media }) => media.length > 0 || content !== undefined,
-          { message: "Post must either contain content or media" },
-        ),
+      z.object({
+        id: z.string(),
+        content: z.string(),
+      }),
     )
     .output(PostResolvedSchema)
-    .mutation(async ({ ctx: { user }, input: { id, content, media } }) => {
-      try {
-        await Promise.all(media.map(async (blobUrl) => await head(blobUrl)));
-      } catch (error) {
-        if (error instanceof BlobNotFoundError) {
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "External media URLs are forbidden",
-          });
-        } else {
-          throw error;
-        }
-      }
-
+    .mutation(async ({ ctx: { user }, input: { id, content } }) => {
       const post = await db.post.findUnique({
         select: { userId: true },
         where: {
@@ -504,8 +487,7 @@ export const post = router({
       const updated = await db.post.update({
         where: { id: id },
         data: {
-          content: content ?? null,
-          media,
+          content,
         },
         include: {
           user: true,
@@ -698,7 +680,7 @@ export const post = router({
           ...child,
           name: child.user.name!,
           username: child.user.username!,
-          to: child.parent?.user.name ?? null,
+          to: null,
           verified: child.user.verified,
           avatar: child.user.image,
           likeCount: child._count.likes,
