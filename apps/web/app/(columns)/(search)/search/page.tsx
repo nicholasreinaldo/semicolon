@@ -29,7 +29,11 @@ export default function Page() {
     refetch: refetchPosts,
   } = trpc.post.search.useInfiniteQuery(
     params && params.tab !== "people"
-      ? { query: params.query, maxResults: 15 }
+      ? {
+          query: params.query,
+          sortBy: params.tab === "rel" ? "relevancy" : "recency",
+          maxResults: 15,
+        }
       : skipToken,
     { getNextPageParam: (lastPage) => lastPage.nextCursor },
   );
