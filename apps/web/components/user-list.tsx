@@ -25,7 +25,7 @@ export function UserList({
       {users.map((user) => (
         <div key={user.id} className="flex flex-row items-center gap-4 p-4">
           <img
-            src={user.profilePictureUrl}
+            src={user.avatar}
             alt={`${user.username}'s profile picture`}
             className="h-12 w-12 rounded-full"
           />
