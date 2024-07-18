@@ -55,19 +55,13 @@ export default function Page() {
   );
 
   useEffect(() => {
-    if (params?.tab !== "people") {
-      setPostResults(
-        (rawPostResults?.pages ?? []).flatMap((page) => page.results),
-      );
-    }
+    setPostResults(
+      (rawPostResults?.pages ?? []).flatMap((page) => page.results),
+    );
   }, [rawPostResults, params]);
 
   useEffect(() => {
-    if (params?.tab === "people") {
-      setUserResults(
-        (rawUserResults?.pages ?? []).flatMap((page) => page.users),
-      );
-    }
+    setUserResults((rawUserResults?.pages ?? []).flatMap((page) => page.users));
   }, [rawUserResults, params]);
 
   useEffect(() => {
