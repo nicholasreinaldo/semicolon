@@ -2,7 +2,7 @@
 
 import { PostFeed } from "@/components/post-feed";
 import { myPostsAtom } from "@/lib/atom";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import type { PostResolved } from "@semicolon/api/schema";
 import { useAtomValue } from "jotai";
 import _ from "lodash";

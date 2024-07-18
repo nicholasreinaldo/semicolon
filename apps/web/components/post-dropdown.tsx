@@ -1,7 +1,7 @@
 import { PostForm } from "./post-form";
 import { followsAtom } from "@/lib/atom";
 import { myPostsAtom } from "@/lib/atom";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import { PostResolved } from "@semicolon/api/schema";
 import { Button } from "@semicolon/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@semicolon/ui/dialog";

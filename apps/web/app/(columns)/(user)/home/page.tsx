@@ -3,7 +3,7 @@
 import { PostFeed } from "@/components/post-feed";
 import { PostForm } from "@/components/post-form";
 import { myPostsAtom } from "@/lib/atom";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import { PostResolved } from "@semicolon/api/schema";
 import { Separator } from "@semicolon/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@semicolon/ui/tabs";

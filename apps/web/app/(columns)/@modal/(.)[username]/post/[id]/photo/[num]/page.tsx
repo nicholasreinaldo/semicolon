@@ -5,7 +5,7 @@ import { PostDetail } from "@/components/post-detail";
 import { PostFeed } from "@/components/post-feed";
 import { PostForm } from "@/components/post-form";
 import { myPostsAtom } from "@/lib/atom";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import * as Dialog from "@radix-ui/react-dialog";
 import type { PostResolved } from "@semicolon/api/schema";
 import { Button } from "@semicolon/ui/button";

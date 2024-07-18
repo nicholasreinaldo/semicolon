@@ -1,7 +1,8 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@semicolon/db";
+import _ from "lodash";
 import NextAuth, { DefaultSession } from "next-auth";
-import type { JWT as _ } from "next-auth/jwt";
+import type { JWT as _JWT } from "next-auth/jwt";
 import Discord from "next-auth/providers/discord";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
@@ -62,8 +63,10 @@ export const {
         if (update.data) {
           token = {
             ...token,
-            ...update.data,
-            picture: update.data.image,
+            ..._.pickBy(update.data, (v) => v !== undefined), // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+            ...(update.data.image !== undefined && {
+              picture: update.data.image,
+            }),
           };
         }
       } else if (trigger === "signIn") {

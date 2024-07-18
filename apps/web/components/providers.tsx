@@ -1,6 +1,6 @@
 "use client";
 
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import React from "react";
 
 export const TrpcProvider = trpc.withTRPC(

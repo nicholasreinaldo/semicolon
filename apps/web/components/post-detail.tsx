@@ -1,7 +1,7 @@
 import { PostActions } from "./post-actions";
 import { PostDropdown } from "./post-dropdown";
 import { ThumbGrid } from "./thumb-grid";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import { formatLongDate } from "@/lib/utils";
 import type { PostResolved } from "@semicolon/api/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@semicolon/ui/avatar";

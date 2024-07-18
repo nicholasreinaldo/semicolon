@@ -1,25 +1,26 @@
 import { getBaseUrl } from "./utils";
 import type { AppRouter } from "@semicolon/api";
-import { createTRPCClient, httpBatchLink } from "@trpc/client";
-import { cookies } from "next/headers";
+import { httpBatchLink } from "@trpc/client";
+import { createTRPCNext } from "@trpc/next";
 import superjson from "superjson";
 
-export const trpc = createTRPCClient<AppRouter>({
-  links: [
-    httpBatchLink({
-      url: `${getBaseUrl()}/api/trpc`, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      headers() {
-        return {
-          Cookie: cookies().toString(),
-        };
-      },
-      fetch(url, options) {
-        return fetch(url, {
-          ...options,
-          credentials: "include",
-        });
-      },
-      transformer: superjson,
-    }),
-  ],
+export const trpc = createTRPCNext<AppRouter>({
+  config() {
+    return {
+      links: [
+        httpBatchLink({
+          url: `${getBaseUrl()}/api/trpc`,
+          transformer: superjson,
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: "include",
+            });
+          },
+        }),
+      ],
+    };
+  },
+  transformer: superjson,
+  ssr: false,
 });

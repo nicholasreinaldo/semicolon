@@ -1,4 +1,4 @@
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import type { PostResolved } from "@semicolon/api/schema";
 import { AspectRatio } from "@semicolon/ui/aspect-ratio";
 import { Separator } from "@semicolon/ui/separator";

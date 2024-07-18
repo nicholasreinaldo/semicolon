@@ -2,7 +2,7 @@
 
 import { ProfileEdit } from "./profile-edit";
 import { followsAtom } from "@/lib/atom";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import type { PublicUserResolved } from "@semicolon/api/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@semicolon/ui/avatar";
 import { Button } from "@semicolon/ui/button";

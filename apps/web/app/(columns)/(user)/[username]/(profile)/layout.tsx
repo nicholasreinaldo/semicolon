@@ -2,7 +2,7 @@ import { BackHeader } from "@/components/back-header";
 import ProfileCard from "@/components/profile-card";
 import ScrollTop from "@/components/scroll-top";
 import { TabsList, TabsLink } from "@/components/tabs-link";
-import { trpc } from "@/lib/trpc";
+import { createCaller } from "@semicolon/api";
 import { auth } from "@semicolon/auth";
 import _ from "lodash";
 import React from "react";
@@ -14,8 +14,9 @@ export default async function Page({
   params: { username: string };
   children: React.ReactNode;
 }) {
-  const user = await trpc.user.username.query({ username });
   const session = await auth();
+  const caller = createCaller({ session });
+  const user = await caller.user.username({ username });
 
   return (
     <div className="flex flex-col">

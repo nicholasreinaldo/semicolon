@@ -1,6 +1,6 @@
 import { PostButton } from "./post-button";
 import { PostForm } from "./post-form";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import { formatLongDate, formatShortDate } from "@/lib/utils";
 import type { PostResolved } from "@semicolon/api/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@semicolon/ui/avatar";

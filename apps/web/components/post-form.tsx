@@ -2,7 +2,7 @@
 
 import { uploadMedia } from "@/lib/actions";
 import { myPostsAtom } from "@/lib/atom";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { PostResolved } from "@semicolon/api/schema";
 import { AspectRatio } from "@semicolon/ui/aspect-ratio";
@@ -223,7 +223,7 @@ export function PostForm({
                   <Textarea
                     {...field}
                     placeholder={placeholder}
-                    className="min-h-[80px] w-full resize-none border-none p-2 text-lg text-white placeholder:text-lg focus-visible:outline-none focus-visible:ring-0"
+                    className="max-h-[350px] min-h-[80px] w-full resize-none border-none p-2 text-lg text-white placeholder:text-lg focus-visible:outline-none focus-visible:ring-0"
                     maxLength={200}
                   />
                 </FormControl>

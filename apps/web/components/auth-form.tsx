@@ -1,6 +1,6 @@
 "use client";
 
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UsernameSchema } from "@semicolon/api/schema";
 import { Button } from "@semicolon/ui/button";

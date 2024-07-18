@@ -1,7 +1,7 @@
 "use client";
 
 import { uploadMedia } from "@/lib/actions";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PublicUserResolved } from "@semicolon/api/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@semicolon/ui/avatar";

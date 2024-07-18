@@ -1,7 +1,7 @@
 "use client";
 
 import { PostFeed } from "@/components/post-feed";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import type { PostResolved } from "@semicolon/api/schema";
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
