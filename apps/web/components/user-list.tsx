@@ -64,26 +64,26 @@ export function UserList({
   return (
     <div className="flex w-full flex-col items-center">
       {users.map((user) => (
-        <div
+        <Link
           key={user.id}
-          className="flex w-full max-w-full flex-row items-start p-4"
+          href={`/${user.username}`}
+          className="flex w-full max-w-full flex-row items-start p-4 no-underline"
+          onClick={(e) => e.stopPropagation()}
         >
-          <Link href={`/${user.username}`} onClick={(e) => e.stopPropagation()}>
-            <Avatar className="h-12 w-12 rounded-full">
-              {user.image ? (
-                <AvatarImage
-                  width={300}
-                  height={300}
-                  src={user.image}
-                  alt={user.name}
-                />
-              ) : (
-                <AvatarFallback>
-                  <User />
-                </AvatarFallback>
-              )}
-            </Avatar>
-          </Link>
+          <Avatar className="h-12 w-12 rounded-full">
+            {user.image ? (
+              <AvatarImage
+                width={300}
+                height={300}
+                src={user.image}
+                alt={user.name}
+              />
+            ) : (
+              <AvatarFallback>
+                <User />
+              </AvatarFallback>
+            )}
+          </Avatar>
           <div className="ml-4 flex flex-grow flex-col">
             <div className="flex justify-between">
               <div>
@@ -98,11 +98,13 @@ export function UserList({
                 }`}
                 disabled={disableFollow}
                 variant={follows[user.username] ? "outline" : "default"}
-                onClick={() =>
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   follows[user.username]
                     ? unfollowUser.mutate({ username: user.username })
-                    : followUser.mutate({ username: user.username })
-                }
+                    : followUser.mutate({ username: user.username });
+                }}
               >
                 {follows[user.username] ? (
                   <>
@@ -120,7 +122,7 @@ export function UserList({
               <p>{user.bio}</p>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
       {loading && <p>Loading...</p>}
       {error && <p>Error loading users.</p>}
