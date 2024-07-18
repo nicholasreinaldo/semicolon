@@ -30,7 +30,12 @@ export function UserList({
           className="flex w-full max-w-full flex-row items-start p-4"
         >
           <Avatar className="size-11">
-            <AvatarImage width={300} height={300} src={user.avatar} />
+            <AvatarImage
+              width={300}
+              height={300}
+              src={user.avatar}
+              alt={user.name}
+            />
             <AvatarFallback>
               <User />
             </AvatarFallback>
