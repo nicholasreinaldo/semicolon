@@ -5,6 +5,7 @@ import { Button, ButtonProps } from "@semicolon/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@semicolon/ui/dropdown-menu";
 import { cn } from "@semicolon/ui/utils";
@@ -50,20 +51,18 @@ export function ProfileIndicator({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="flex flex-col gap-2 rounded-3xl px-0 py-4 [&>*]:min-w-40 [&>*]:text-base [&>*]:font-bold">
-        <Button
-          variant="ghost"
-          className="justify-start rounded-none p-6"
+        <DropdownMenuItem
+          className="cursor-pointer justify-start gap-4 rounded-none px-6 py-4"
           asChild
         >
           <Link href={`/${username}`}>Go to profile</Link>
-        </Button>
-        <Button
-          variant="ghost"
-          className="justify-start rounded-none p-6"
-          onClick={() => signOut()}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer justify-start gap-4 rounded-none px-6 py-4"
+          onSelect={() => signOut()}
         >
           Log out {`@${username}`}
-        </Button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

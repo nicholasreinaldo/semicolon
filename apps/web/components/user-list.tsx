@@ -1,21 +1,13 @@
-import { followsAtom } from "@/lib/atom";
-import { trpc } from "@/lib/trpc";
+import UserCard from "./user-card";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { PublicUserResolved } from "@semicolon/api/schema";
-import { Avatar, AvatarFallback, AvatarImage } from "@semicolon/ui/avatar";
+import { Alert, AlertDescription, AlertTitle } from "@semicolon/ui/alert";
 import { Button } from "@semicolon/ui/button";
-import { useAtom } from "jotai";
-import { User } from "lucide-react";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-
-interface UserListProps {
-  users: PublicUserResolved[];
-  loading: boolean;
-  error: boolean;
-  fetchNextPage: () => void;
-  refetch: () => void;
-  hasNextPage: boolean;
-}
+import Spinner from "@semicolon/ui/spinner";
+import _ from "lodash";
+import { RotateCw } from "lucide-react";
+import React from "react";
+import { InView } from "react-intersection-observer";
 
 export function UserList({
   users,
@@ -24,113 +16,54 @@ export function UserList({
   fetchNextPage,
   refetch,
   hasNextPage,
-}: UserListProps) {
-  const [follows, updateFollows] = useAtom(followsAtom);
-  const [disableFollow, setDisableFollow] = useState(false);
-  const utils = trpc.useUtils();
-
-  useEffect(() => {
-    users.forEach((user) => {
-      if (follows[user.username] === undefined) {
-        updateFollows((follows) => {
-          follows[user.username] = user.followed;
-        });
-      }
-    });
-  }, [users, follows, updateFollows]);
-
-  const followUser = trpc.user.follow.useMutation({
-    onMutate: () => setDisableFollow(true),
-    onSuccess: async (data, variables) => {
-      updateFollows((follows) => {
-        follows[variables.username] = true;
-      });
-      await utils.feed.following.invalidate();
-    },
-    onSettled: () => setDisableFollow(false),
-  });
-
-  const unfollowUser = trpc.user.unfollow.useMutation({
-    onMutate: () => setDisableFollow(true),
-    onSuccess: async (data, variables) => {
-      updateFollows((follows) => {
-        follows[variables.username] = false;
-      });
-      await utils.feed.following.invalidate();
-    },
-    onSettled: () => setDisableFollow(false),
-  });
-
+}: {
+  users: PublicUserResolved[];
+  loading: boolean;
+  error: boolean;
+  hasNextPage: boolean;
+  fetchNextPage: () => Promise<unknown>;
+  refetch: () => Promise<unknown>;
+}) {
   return (
     <div className="flex w-full flex-col items-center">
       {users.map((user) => (
-        <Link
-          key={user.id}
-          href={`/${user.username}`}
-          className="flex w-full max-w-full flex-row items-start p-4 no-underline"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Avatar className="h-12 w-12 rounded-full">
-            {user.image ? (
-              <AvatarImage
-                width={300}
-                height={300}
-                src={user.image}
-                alt={user.name}
-              />
-            ) : (
-              <AvatarFallback>
-                <User />
-              </AvatarFallback>
-            )}
-          </Avatar>
-          <div className="ml-4 flex flex-grow flex-col">
-            <div className="flex justify-between">
-              <div>
-                <p className="font-bold">{user.name}</p>
-                <p className="text-sm text-gray-500">@{user.username}</p>
-              </div>
-              <Button
-                className={`group min-w-[110px] cursor-pointer text-nowrap rounded-full font-bold text-black ${
-                  follows[user.username]
-                    ? "text-foreground hover:bg-destructive/15 hover:border-red-900"
-                    : "text-background"
-                }`}
-                disabled={disableFollow}
-                variant={follows[user.username] ? "outline" : "default"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  follows[user.username]
-                    ? unfollowUser.mutate({ username: user.username })
-                    : followUser.mutate({ username: user.username });
-                }}
-              >
-                {follows[user.username] ? (
-                  <>
-                    <p className="group-hover:hidden">Following</p>
-                    <p className="hidden text-red-700 group-hover:block">
-                      Unfollow
-                    </p>
-                  </>
-                ) : (
-                  <p className="text-black">Follow</p>
-                )}
-              </Button>
-            </div>
-            <div className="mt-2">
-              <p>{user.bio}</p>
-            </div>
-          </div>
-        </Link>
+        <UserCard key={user.id} {...user} />
       ))}
-      {loading && <p>Loading...</p>}
-      {error && <p>Error loading users.</p>}
-      {hasNextPage && !loading && (
-        <Button onClick={fetchNextPage} variant="outline" size="sm">
-          Load more
-        </Button>
-      )}
+      {loading ? (
+        <div className="flex h-20 items-center justify-center">
+          <Spinner size={30} />
+        </div>
+      ) : error ? (
+        <div className="border-destructive m-5 flex flex-grow flex-row items-center justify-between rounded-lg border p-0">
+          <Alert variant="destructive" className="border-none">
+            <ExclamationTriangleIcon className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              There was a problem fetching users.
+            </AlertDescription>
+          </Alert>
+          <Button
+            size={"icon"}
+            variant={"ghost"}
+            className="hover:bg-destructive/30 mr-4 aspect-square rounded-full"
+            onClick={async () => refetch()}
+          >
+            <RotateCw className="stroke-destructive" />
+          </Button>
+        </div>
+      ) : hasNextPage ? (
+        <InView
+          as="div"
+          threshold={0.9}
+          onChange={async (inView, _) => {
+            if (inView) {
+              await fetchNextPage();
+            }
+          }}
+        >
+          <div className="flex h-20 flex-row items-center justify-center" />
+        </InView>
+      ) : undefined}
     </div>
   );
 }
