@@ -4,8 +4,18 @@ module.exports = {
     "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:@typescript-eslint/strict-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
+    "plugin:vitest/legacy-recommended",
   ],
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "vitest"],
+  overrides: [
+    {
+      files: ["__tests__/**"],
+      plugins: ["@typescript-eslint", "vitest"],
+      rules: {
+        "@typescript-eslint/unbound-method": "off",
+      },
+    },
+  ],
   rules: {
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-misused-promises": [

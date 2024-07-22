@@ -1,6 +1,7 @@
 "use client";
 
 import { Post } from "@/components/post";
+import { trpc } from "@/lib/trpc";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import type { PostResolved } from "@semicolon/api/schema";
 import { Alert, AlertDescription, AlertTitle } from "@semicolon/ui/alert";
@@ -34,10 +35,12 @@ export function PostFeed({
   refetch: () => Promise<unknown>;
   media?: boolean;
 }) {
+  const utils = trpc.useUtils();
+
   return (
     <>
       {!media ? (
-        <div className="flex flex-col">
+        <div className="flex shrink flex-col">
           {posts.map((post) => (
             <Fragment key={post.id}>
               <Post {...post} indicateReply={indicateReply} />
@@ -48,23 +51,30 @@ export function PostFeed({
       ) : (
         posts.length > 0 && (
           <div className="grid grid-cols-1 gap-1 p-1 sm:grid-cols-2 md:grid-cols-3">
-            {posts.map(({ id, media, username }, i) => (
-              <Link
-                key={id}
-                href={`/${username}/post/${id}/photo/1`}
-                scroll={false}
-              >
-                <AspectRatio ratio={1} className="bg-muted">
-                  <Image
-                    src={media[0]!}
-                    alt={`${username}'s image (${i})`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 45vw, 15vw"
-                    className="object-cover"
-                  />
-                </AspectRatio>
-              </Link>
-            ))}
+            {posts.map((post, i) => {
+              const { id, media, username, name } = post;
+              return (
+                <Link
+                  key={id}
+                  href={`/${username}/post/${id}/photo/1`}
+                  onClick={(e) => {
+                    utils.post.id.setData({ id }, post);
+                    e.stopPropagation();
+                  }}
+                  scroll={false}
+                >
+                  <AspectRatio ratio={1} className="bg-muted">
+                    <Image
+                      src={media[0]!}
+                      alt={`${name}'s media (${i})`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 45vw, 15vw"
+                      className="object-cover"
+                    />
+                  </AspectRatio>
+                </Link>
+              );
+            })}
           </div>
         )
       )}

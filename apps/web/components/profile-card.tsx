@@ -7,6 +7,7 @@ import type { PublicUserResolved } from "@semicolon/api/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@semicolon/ui/avatar";
 import { Button } from "@semicolon/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@semicolon/ui/dialog";
+import { ScrollArea } from "@semicolon/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@semicolon/ui/tooltip";
 import { useAtom } from "jotai";
 import { BadgeCheck, CalendarDays, Link2, MapPin, User } from "lucide-react";
@@ -56,6 +57,8 @@ const ProfileCard = (props: ProfileCardProps) => {
         follows[username] = true;
       });
       await utils.feed.following.invalidate();
+      await utils.post.search.invalidate();
+      await utils.user.search.invalidate();
     },
     onSettled: () => setDisableFollow(false),
   });
@@ -67,6 +70,8 @@ const ProfileCard = (props: ProfileCardProps) => {
         follows[username] = false;
       });
       await utils.feed.following.invalidate();
+      await utils.post.search.invalidate();
+      await utils.user.search.invalidate();
     },
     onSettled: () => setDisableFollow(false),
   });
@@ -101,25 +106,24 @@ const ProfileCard = (props: ProfileCardProps) => {
                     <span className="font-bold">Edit profile</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent
-                  close={false}
-                  className="max-h-[650px] overflow-y-auto p-0"
-                >
-                  <ProfileEdit {...props} />
+                <DialogContent close={false} className="overflow-hidden p-0">
+                  <ScrollArea className="max-h-[650px]">
+                    <ProfileEdit {...props} />
+                  </ScrollArea>
                 </DialogContent>
               </Dialog>
             ) : (
               <Button
-                className={`group min-w-[110px] cursor-pointer text-nowrap rounded-full font-bold text-black ${follows[username] ? "text-foreground hover:bg-destructive/15 hover:border-red-900" : "text-background"}`}
+                className={`group min-w-[110px] cursor-pointer text-nowrap rounded-full font-bold text-black ${follows[username] ?? followed ? "text-foreground hover:bg-destructive/15 hover:border-red-900" : "text-background"}`}
                 disabled={disableFollow}
-                variant={follows[username] ? "outline" : "default"}
+                variant={follows[username] ?? followed ? "outline" : "default"}
                 onClick={() =>
-                  follows[username]
+                  follows[username] ?? followed
                     ? unfollowUser.mutate({ username })
                     : followUser.mutate({ username })
                 }
               >
-                {follows[username] ? (
+                {follows[username] ?? followed ? (
                   <>
                     <p className="group-hover:hidden">Following</p>
                     <p className="hidden text-red-700 group-hover:block">

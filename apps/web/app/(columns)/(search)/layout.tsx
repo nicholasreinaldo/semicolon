@@ -1,4 +1,4 @@
-// file name and directory: root/apps/web/app/(columns)/(search)/layout.tsx
+import { SimpleFilter } from "@/components/search-filter";
 import { Sticky } from "@/components/sticky";
 import { Suggestions } from "@/components/suggestions";
 import { Trends } from "@/components/trends";
@@ -11,11 +11,14 @@ export default function Layout({
 }>) {
   return (
     <>
-      <div className="w-full min-w-[257px] md:max-w-[650px]">{children}</div>
+      <div className="w-full min-w-[257px] md:min-w-[450px] md:max-w-[600px]">
+        {children}
+      </div>
       <Separator orientation="vertical" className="h-auto min-h-screen" />
-      <div className="hidden min-h-full w-1/4 min-w-[300px] flex-none shrink-0 flex-col justify-start pl-[30px] pt-5 md:flex">
-        <Sticky>
+      <div className="hidden min-h-full w-full min-w-[300px] max-w-[360px] shrink flex-col justify-start pl-[30px] pt-4 lg:flex">
+        <Sticky top={16}>
           <div className="flex flex-col gap-5">
+            <SimpleFilter />
             <Suggestions />
             <Trends />
             <div />

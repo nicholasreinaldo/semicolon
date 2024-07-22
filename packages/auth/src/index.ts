@@ -42,13 +42,20 @@ export const {
   auth,
 } = NextAuth({
   providers: [
-    Resend({ from: "onboarding@resend.dev" }),
+    Resend({
+      from: `onboarding@${process.env.NODE_ENV === "production" ? process.env.DEPLOYMENT_URL! : "resend.dev"}`,
+    }),
     Google,
     Discord,
     GitHub,
   ],
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
+  pages: {
+    signIn: "/flow/login",
+    verifyRequest: "/flow/verify",
+    error: "/flow/error",
+  },
   callbacks: {
     async jwt({ token, trigger, session, user }) {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

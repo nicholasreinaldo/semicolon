@@ -10,7 +10,7 @@ import { Fragment, MouseEventHandler } from "react";
 export function ThumbGrid(
   post: PostResolved & Omit<React.HTMLAttributes<HTMLDivElement>, "content">,
 ) {
-  const { className, id, media, username } = post;
+  const { className, id, media, username, name } = post;
   const utils = trpc.useUtils();
   if (media.length === 0) {
     throw new Error(`ThumbGrid must be supplied at least one image URL.`);
@@ -36,7 +36,7 @@ export function ThumbGrid(
               >
                 <Image
                   src={media[0]!}
-                  alt={`${username}'s image (1)`}
+                  alt={`${name}'s post media (1)`}
                   fill
                   sizes="(max-width: 768px) 75vw, (max-width: 1024px) 50vw, (max-width: 1280px) 40vw, 35vw"
                   className="rounded-md object-cover"
@@ -50,7 +50,7 @@ export function ThumbGrid(
       return (
         <div
           className={cn(
-            "flex w-full flex-row overflow-hidden rounded-lg border",
+            "relative z-0 flex w-full flex-row overflow-hidden rounded-lg border",
             className,
           )}
         >
@@ -64,7 +64,7 @@ export function ThumbGrid(
                 >
                   <Image
                     src={src}
-                    alt={`${username}'s image (${i + 1})`}
+                    alt={`${name}'s post media (${i + 1})`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover"
@@ -85,7 +85,7 @@ export function ThumbGrid(
       return (
         <div
           className={cn(
-            "flex w-full flex-row overflow-hidden rounded-lg border",
+            "relative z-0 flex w-full flex-row overflow-hidden rounded-lg border",
             className,
           )}
         >
@@ -97,7 +97,7 @@ export function ThumbGrid(
             >
               <Image
                 src={media[0]!} // eslint-disable-line @typescript-eslint/no-non-null-assertion
-                alt={`${username}'s image (1)`}
+                alt={`${name}'s post media (1)`}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
@@ -124,7 +124,7 @@ export function ThumbGrid(
                     >
                       <Image
                         src={src}
-                        alt={`${username}'s image (${i + 2})`}
+                        alt={`${name}'s post media (${i + 2})`}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover"
@@ -142,7 +142,7 @@ export function ThumbGrid(
       return (
         <div
           className={cn(
-            "flex w-full flex-col overflow-hidden rounded-lg border",
+            "relative z-0 flex w-full flex-col overflow-hidden rounded-lg border",
             className,
           )}
         >
@@ -158,7 +158,7 @@ export function ThumbGrid(
                     >
                       <Image
                         src={src}
-                        alt={`${username}'s image (${i + 1})`}
+                        alt={`${name}'s post media (${i + 1})`}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover"
@@ -188,7 +188,7 @@ export function ThumbGrid(
                     >
                       <Image
                         src={src}
-                        alt={`${username}'s image (${i + 3})`}
+                        alt={`${name}'s post media (${i + 3})`}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover"

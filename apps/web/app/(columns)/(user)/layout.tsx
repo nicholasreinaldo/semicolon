@@ -11,10 +11,15 @@ export default function Layout({
 }>) {
   return (
     <>
-      <div className="w-full min-w-[257px] md:max-w-[650px]">{children}</div>
+      <div className="w-full min-w-[257px] md:min-w-[450px] md:max-w-[600px]">
+        {children}
+      </div>
       <Separator orientation="vertical" className="h-auto min-h-screen" />
-      <div className="hidden min-h-full w-1/4 min-w-[300px] flex-none shrink-0 flex-col justify-start pl-[30px] pt-0 md:flex">
-        <div id="search-bar" className="bg-card sticky top-0 z-10 py-4">
+      <div className="hidden min-h-full w-full min-w-[300px] max-w-[360px] shrink flex-col justify-start pl-[30px] lg:flex">
+        <div
+          id="search-bar"
+          className="bg-background sticky top-0 z-10 flex-shrink pb-4 pt-3"
+        >
           <SearchBar />
         </div>
         <Sticky top="#search-bar">

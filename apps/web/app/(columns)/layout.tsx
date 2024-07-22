@@ -29,7 +29,7 @@ export default async function Layout({
         <Separator orientation="vertical" className="h-auto min-h-screen" />
         {children}
       </div>
-      <BottomBar />
+      <BottomBar {...{ username }} />
       <Toaster />
       {modal}
     </div>

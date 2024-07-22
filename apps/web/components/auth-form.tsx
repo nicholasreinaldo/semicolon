@@ -47,13 +47,13 @@ function SuggestionMessage({
 }) {
   const { message, action, href } = (() => {
     switch (variant) {
-      case "login":
+      case "signup":
         return {
           message: "Already have an account? ",
           action: "Sign in",
           href: "/flow/login",
         };
-      case "signup":
+      case "login":
         return {
           message: "Don't have an account? ",
           action: "Sign up",

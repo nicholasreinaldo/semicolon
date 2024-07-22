@@ -7,12 +7,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@semicolon/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@semicolon/ui/dialog";
 import { Separator } from "@semicolon/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@semicolon/ui/tooltip";
+import { toast } from "@semicolon/ui/use-toast";
 import {
   BadgeCheck,
   BarChart2,
   Bookmark,
   Heart,
   MessageCircle,
+  Paperclip,
   Repeat2,
   Upload,
   User,
@@ -32,7 +34,7 @@ function ReplyIndicator({
     <div className="relative flex w-full flex-row gap-3 p-3 pb-2">
       <div className="flex flex-col items-center pt-2">
         <Avatar className="size-11">
-          {avatar && <AvatarImage width={300} height={300} src={avatar} />}
+          {avatar && <AvatarImage src={avatar} alt={`${name}'s avatar`} />}
           <AvatarFallback>
             <User />
           </AvatarFallback>
@@ -95,7 +97,7 @@ export function PostActions({
     },
   );
 
-  const { replyCount, id, views, likeCount, liked } = post;
+  const { username, replyCount, id, views, likeCount, liked } = post;
 
   const likePost = trpc.post.like.useMutation({
     onMutate: () =>
@@ -147,6 +149,7 @@ export function PostActions({
           <PostButton
             icon={MessageCircle}
             label={replyCount}
+            aria-label="Reply to post"
             iconSize={variant === "normal" ? "small" : "big"}
           />
         </DialogTrigger>
@@ -169,6 +172,7 @@ export function PostActions({
       <PostButton
         icon={Repeat2}
         highlight="green"
+        aria-label="Repost"
         label={0}
         iconSize={variant === "normal" ? "small" : "big"}
       />
@@ -177,6 +181,7 @@ export function PostActions({
         highlight="pink"
         active={liked}
         iconSize={variant === "normal" ? "small" : "big"}
+        aria-label="Like post"
         label={new Intl.NumberFormat("en-US", {
           notation: "compact",
         }).format(likeCount)}
@@ -187,6 +192,7 @@ export function PostActions({
       {variant === "normal" && (
         <PostButton
           icon={BarChart2}
+          aria-label="Post views"
           label={new Intl.NumberFormat("en-US", {
             notation: "compact",
           }).format(views)}
@@ -194,13 +200,36 @@ export function PostActions({
       )}
       {variant === "normal" ? (
         <div className="hidden flex-row min-[300px]:flex">
-          <PostButton icon={Bookmark} className="hidden min-[350px]:block" />
-          <PostButton icon={Upload} />
+          <PostButton
+            icon={Bookmark}
+            aria-label="Bookmark post"
+            className="hidden min-[350px]:block"
+          />
+          <PostButton
+            icon={Upload}
+            aria-label="Share post"
+            onClick={async () => {
+              await navigator.clipboard.writeText(
+                `${window.location.origin}/${username}/post/${id}`,
+              );
+              toast({
+                description: (
+                  <div className="flex items-center justify-start gap-4">
+                    <Paperclip size={35} />
+                    <article className="flex flex-col gap-2">
+                      <h3 className="text-base font-black">Copied</h3>
+                      <p>The link is now in your clipboard.</p>
+                    </article>
+                  </div>
+                ),
+              });
+            }}
+          />
         </div>
       ) : (
         <>
-          <PostButton icon={Bookmark} label={0} />
-          <PostButton icon={Upload} />
+          <PostButton icon={Bookmark} aria-label="Bookmark post" label={0} />
+          <PostButton icon={Upload} aria-label="Share post" />
         </>
       )}
     </div>

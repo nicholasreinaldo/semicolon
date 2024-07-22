@@ -10,12 +10,12 @@ import {
   Bell,
   CalendarPlus,
   CircleEllipsis,
-  CircleUser,
   Crown,
   Home,
   Mail,
   Search,
   SquarePen,
+  User,
 } from "lucide-react";
 import React, { useState } from "react";
 
@@ -52,7 +52,7 @@ export function SideBar({
           <NavItem href="#" icon={Mail} label="Messages" />
           <NavItem href="#" icon={CalendarPlus} label="Bookmarks" />
           <NavItem href="#" icon={Crown} label="Communities" />
-          <NavItem href={`/${username}`} icon={CircleUser} label="Profile" />
+          <NavItem href={`/${username}`} icon={User} label="Profile" />
           <NavItem href="#" icon={CircleEllipsis} label="More" />
         </div>
         <div className="mt-4 lg:pr-4">

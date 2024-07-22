@@ -1,81 +1,84 @@
-# Turborepo starter
+# Semicolon
 
-This is an official starter Turborepo.
-
-## Using this example
-
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
+A simple Twitter/X clone built with Next.js.
 
 ## What's inside?
 
-This Turborepo includes the following packages/apps:
+This monorepo includes the following packages/apps:
 
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `web`: a [Next.js](https://nextjs.org) app
+- `@semicolon/ui`: a collection of primitive UI components based on [shadcn/ui](https://ui.shadcn.com)
+- `@semicolon/db`: a PostgreSQL database client powered by [Prisma](https://prisma.io) and [Kysely](https://kysely.dev)
+- `@semicolon/auth`: Authentication logic implemented using [Auth.js](https://authjs.dev)
+- `@semicolon/api`: [tRPC](https://trpc.io) API routes with OpenAPI support thanks to [trpc-openapi](https://github.com/jlalmes/trpc-openapi) and [Scalar](https://scalar.com)
+- `@semicolon/eslint-config`: `eslint` configurations
+- `@semicolon/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `@semicolon/tailwind-config`: shared `tailwind` configuration
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org).
 
 ### Utilities
 
-This Turborepo has some additional tools already setup for you:
+This monorepo has some additional tools already set up for you:
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
+- [TypeScript](https://typescriptlang.org) for static type checking
+- [ESLint](https://eslint.org) for code linting
 - [Prettier](https://prettier.io) for code formatting
+- [Vitest](https://vitest.dev) for unit testing
 
-### Build
+## Develop
 
-To build all apps and packages, run the following command:
+1. Set up your database environment
 
-```
-cd my-turborepo
-pnpm build
-```
+   To get started, you can use the provided Docker Compose file to quickly set up a PostgreSQL server:
 
-### Develop
+   ```bash
+   docker compose up -d
+   echo "POSTGRES_PRISMA_URL=postgresql://postgres:postgres@localhost:5432/semicolon" >.env
+   for p in apps/web packages/db packages/api; do ln -s ../../.env $p; done
+   ```
 
-To develop all apps and packages, run the following command:
+   If you want to run your own custom server, make sure you adjust the environment variable above.
 
-```
-cd my-turborepo
-pnpm dev
-```
+2. Migrate the database
 
-### Remote Caching
+   Run the following command to migrate and synchronize your database with the schema:
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+   ```bash
+   npx prisma migrate dev
+   ```
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+   Optionally, you can also seed the database for testing purposes:
 
-```
-cd my-turborepo
-npx turbo login
-```
+   ```bash
+   npx prisma db seed
+   ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+3. Set up authentication secrets
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+   This project supports the following Auth.js providers:
 
-```
-npx turbo link
-```
+   - [Google](https://authjs.dev/getting-started/providers/google)
+   - [Discord](https://authjs.dev/getting-started/providers/discord)
+   - [GitHub](https://authjs.dev/getting-started/providers/github)
+   - [Resend](https://authjs.dev/getting-started/providers/resend)
 
-## Useful Links
+   Refer to each of the documentation above for setup instructions. Your `.env.local` file should be located in `apps/web`.
 
-Learn more about the power of Turborepo:
+4. Launch
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+   ```bash
+   npm run dev
+   ```
+
+   And that's it. Everything should be set up now.
+
+   By default, the dev environment will launch these apps in the following ports:
+
+   - `3000`: The main Next.js web app
+     - `/api/trpc/*`: tRPC routes
+     - `/api/*`: OpenAPI routes
+       - `/api/docs`: OpenAPI documentation
+   - `5555`: IDE for interacting with the PostgreSQL database

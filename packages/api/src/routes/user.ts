@@ -21,11 +21,19 @@ import { z } from "zod";
 
 export const user = router({
   search: userProcedure
-    .meta({ openapi: { method: "GET", path: "/users/search" } })
+    .meta({
+      openapi: {
+        method: "GET",
+        path: "/users/search",
+        summary: "Search for users",
+        tags: ["users"],
+      },
+    })
     .input(
       z.object({
         query: z.string(),
         cursor: z.string().uuid().optional(),
+        following: z.boolean().default(false),
         maxResults: z.number().min(1).max(100).default(50),
       }),
     )
@@ -36,15 +44,16 @@ export const user = router({
       }),
     )
     .query(
-      async ({ ctx: { session }, input: { query, cursor, maxResults } }) => {
+      async ({
+        ctx: { session },
+        input: { query, cursor, maxResults, following },
+      }) => {
         const users = await db.user.findMany({
           where: {
             registered: { not: null },
-            OR: [
-              { name: { contains: query, mode: "insensitive" } },
-              { username: { contains: query, mode: "insensitive" } },
-              { bio: { contains: query, mode: "insensitive" } },
-            ],
+            ...(following && {
+              followedBy: { some: { username: session?.user?.username } },
+            }),
           },
           take: maxResults + 1,
           ...(cursor && { cursor: { id: cursor } }),
@@ -94,12 +103,26 @@ export const user = router({
       },
     ),
   me: userProcedure
-    .meta({ openapi: { method: "GET", path: "/users/me" } })
+    .meta({
+      openapi: {
+        method: "GET",
+        path: "/users/me",
+        summary: "Get logged in user",
+        tags: ["users"],
+      },
+    })
     .input(z.void())
     .output(UserResolvedSchema)
     .query(({ ctx: { user } }) => ({ ...user, followed: false })),
   update: userProcedure
-    .meta({ openapi: { method: "POST", path: "/users/me/update" } })
+    .meta({
+      openapi: {
+        method: "POST",
+        path: "/users/me/update",
+        summary: "Update logged in user",
+        tags: ["users"],
+      },
+    })
     .input(
       z.object({
         name: z.string().min(2).max(50).optional(),
@@ -162,7 +185,14 @@ export const user = router({
       },
     ),
   register: newUserProcedure
-    .meta({ openapi: { method: "POST", path: "/users/register" } })
+    .meta({
+      openapi: {
+        method: "POST",
+        path: "/users/me/register",
+        summary: "Register logged in user",
+        tags: ["users"],
+      },
+    })
     .input(
       z.object({
         name: z.string(),
@@ -201,7 +231,14 @@ export const user = router({
       },
     ),
   id: publicProcedure
-    .meta({ openapi: { method: "GET", path: "/users/by/id/{id}" } })
+    .meta({
+      openapi: {
+        method: "GET",
+        path: "/users/by/id/{id}",
+        summary: "Get a user by their ID",
+        tags: ["users"],
+      },
+    })
     .input(z.object({ id: z.string().uuid() }))
     .output(PublicUserResolvedSchema)
     .query(async ({ ctx: { session }, input: { id } }) => {
@@ -242,7 +279,14 @@ export const user = router({
       };
     }),
   username: publicProcedure
-    .meta({ openapi: { method: "GET", path: "/users/{username}" } })
+    .meta({
+      openapi: {
+        method: "GET",
+        path: "/users/{username}",
+        summary: "Get a user by their username",
+        tags: ["users"],
+      },
+    })
     .input(z.object({ username: UsernameSchema }))
     .output(PublicUserResolvedSchema.merge(z.object({ followed: z.boolean() })))
     .query(async ({ input: { username }, ctx: { session } }) => {
@@ -285,7 +329,14 @@ export const user = router({
       };
     }),
   follow: userProcedure
-    .meta({ openapi: { method: "PUT", path: "/users/{username}/follow" } })
+    .meta({
+      openapi: {
+        method: "PUT",
+        path: "/users/{username}/follow",
+        summary: "Follow a user",
+        tags: ["users"],
+      },
+    })
     .input(z.object({ username: UsernameSchema }))
     .output(z.void())
     .mutation(
@@ -308,7 +359,14 @@ export const user = router({
       },
     ),
   unfollow: userProcedure
-    .meta({ openapi: { method: "DELETE", path: "/users/{username}/follow" } })
+    .meta({
+      openapi: {
+        method: "DELETE",
+        path: "/users/{username}/follow",
+        summary: "Unfollow a user",
+        tags: ["users"],
+      },
+    })
     .input(z.object({ username: UsernameSchema }))
     .output(z.void())
     .mutation(
@@ -332,7 +390,12 @@ export const user = router({
     ),
   posts: publicProcedure
     .meta({
-      openapi: { method: "GET", path: "/users/{username}/posts" },
+      openapi: {
+        method: "GET",
+        path: "/users/{username}/posts",
+        summary: "Get a user's posts",
+        tags: ["users"],
+      },
     })
     .input(
       z.object({
@@ -416,7 +479,12 @@ export const user = router({
     ),
   likes: publicProcedure
     .meta({
-      openapi: { method: "GET", path: "/users/{username}/likes" },
+      openapi: {
+        method: "GET",
+        path: "/users/{username}/likes",
+        summary: "Get a user's liked posts",
+        tags: ["users"],
+      },
     })
     .input(
       z.object({
@@ -513,7 +581,14 @@ export const user = router({
       },
     ),
   media: publicProcedure
-    .meta({ openapi: { method: "GET", path: "/users/{username}/media" } })
+    .meta({
+      openapi: {
+        method: "GET",
+        path: "/users/{username}/media",
+        summary: "Get a user's media posts",
+        tags: ["users"],
+      },
+    })
     .input(
       z.object({
         username: z.string(),
@@ -598,7 +673,12 @@ export const user = router({
     ),
   replies: publicProcedure
     .meta({
-      openapi: { method: "GET", path: "/users/{username}/replies" },
+      openapi: {
+        method: "GET",
+        path: "/users/{username}/replies",
+        summary: "Get a user's replies",
+        tags: ["users"],
+      },
     })
     .input(
       z.object({

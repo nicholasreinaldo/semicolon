@@ -73,7 +73,7 @@ export default function Page({
 
   return (
     <div>
-      <BackHeader>
+      <BackHeader className="backdrop-blur-md">
         <h3 className="text-xl font-semibold">Post</h3>
       </BackHeader>
       <PostDetail {...post} />

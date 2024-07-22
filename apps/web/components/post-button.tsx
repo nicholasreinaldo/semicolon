@@ -42,10 +42,11 @@ const highlightVariants = cva([], {
 const activeVariants = cva([], {
   variants: {
     highlight: {
-      blue: "[&>*]:stroke-blue-400 [&~*]:text-blue-400",
-      pink: "[&>*]:stroke-pink-500 [&~*]:text-pink-500",
-      green: "[&>*]:stroke-green-600 [&~*]:text-green-600",
-      yellow: "[&>*]:stroke-yellow-400 [&~*]:text-yellow-400",
+      blue: "[&>*]:stroke-blue-400 [&>*]:fill-blue-400 [&~*]:text-blue-400",
+      pink: "[&>*]:stroke-pink-500 [&>*]:fill-pink-500 [&~*]:text-pink-500",
+      green: "[&>*]:stroke-green-600 [&>*]:fill-green-600 [&~*]:text-green-600",
+      yellow:
+        "[&>*]:stroke-yellow-400 [&>*]:fill-yellow-400 [&~*]:text-yellow-400",
     },
   },
   defaultVariants: {
@@ -88,7 +89,7 @@ export function PostButton({
   return (
     <div className={cn("group relative flex flex-row items-center", className)}>
       <Button
-        variant={"ghost"}
+        variant="ghost"
         className={cn(
           highlightVariants({ highlight }),
           active ? activeVariants({ highlight }) : "",

@@ -11,7 +11,7 @@ export default async function Page() {
   }
 
   return !session ? (
-    <PreAuthForm variant="login" />
+    <PreAuthForm variant="signup" />
   ) : (
     <PostAuthForm defaultName={session.user?.name} />
   );

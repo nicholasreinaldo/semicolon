@@ -1,126 +1,48 @@
 "use client";
 
-import { PostFeed } from "@/components/post-feed";
-import { UserList } from "@/components/user-list";
-import { trpc } from "@/lib/trpc";
-import { PostResolved, PublicUserResolved } from "@semicolon/api/schema";
-import { skipToken } from "@tanstack/react-query";
-import { redirect, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { z } from "zod";
+import { PostSearch, UserSearch } from "@/components/search-view";
+import { useSearchFilters } from "@/lib/hooks";
+import { redirect } from "next/navigation";
+import React from "react";
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const [params, setParams] = useState<{
-    query: string;
-    tab: "rel" | "latest" | "people";
-  } | null>(null);
-  const [postResults, setPostResults] = useState<PostResolved[]>([]);
-  const [userResults, setUserResults] = useState<PublicUserResolved[]>([]);
+  const [
+    ,
+    {
+      tab,
+      query,
+      following,
+      from,
+      to,
+      minLikes,
+      minReplies,
+      reply,
+      since,
+      until,
+    },
+  ] = useSearchFilters();
 
-  const {
-    data: rawPostResults,
-    fetchNextPage: fetchNextPostPage,
-    isLoading: isPostLoading,
-    isLoadingError: isPostLoadingError,
-    isFetchingNextPage: isPostFetchingNextPage,
-    isFetchNextPageError: isPostFetchNextPageError,
-    hasNextPage: hasPostNextPage,
-    refetch: refetchPosts,
-  } = trpc.post.search.useInfiniteQuery(
-    params && params.tab !== "people"
-      ? {
-          query: params.query,
-          sortBy: params.tab === "rel" ? "relevancy" : "recency",
-          maxResults: 15,
-        }
-      : skipToken,
-    { getNextPageParam: (lastPage) => lastPage.nextCursor },
-  );
+  if (!query) {
+    redirect("/home");
+  }
 
-  const {
-    data: rawUserResults,
-    fetchNextPage: fetchNextUserPage,
-    isLoading: isUserLoading,
-    isLoadingError: isUserLoadingError,
-    isFetchingNextPage: isUserFetchingNextPage,
-    isFetchNextPageError: isUserFetchNextPageError,
-    hasNextPage: hasUserNextPage,
-    refetch: refetchUsers,
-  } = trpc.user.search.useInfiniteQuery(
-    params && params.tab === "people"
-      ? { query: params.query, maxResults: 15 }
-      : skipToken,
-    { getNextPageParam: (lastPage) => lastPage.nextCursor },
-  );
-
-  useEffect(() => {
-    setPostResults(
-      (rawPostResults?.pages ?? []).flatMap((page) => page.results),
-    );
-  }, [rawPostResults, params]);
-
-  useEffect(() => {
-    setUserResults((rawUserResults?.pages ?? []).flatMap((page) => page.users));
-  }, [rawUserResults, params]);
-
-  useEffect(() => {
-    const query = searchParams.get("q");
-    if (query === null) {
-      redirect("/home");
-    }
-
-    const { data: tab } = z
-      .union([z.null(), z.literal("latest"), z.literal("people")])
-      .safeParse(searchParams.get("f"));
-
-    if (!tab) {
-      const updated = new URLSearchParams(searchParams.toString());
-      updated.delete("f");
-      window.history.replaceState(null, "", `?${updated.toString()}`);
-      setParams({ query, tab: "rel" });
-    } else {
-      setParams({ query, tab });
-    }
-  }, [searchParams]);
-
-  return (
-    <div className="flex w-full flex-col items-center">
-      <div className="w-full">
-        {params?.tab === "people" ? (
-          <UserList
-            users={userResults}
-            loading={isUserLoading || isUserFetchingNextPage}
-            error={isUserLoadingError || isUserFetchNextPageError}
-            fetchNextPage={fetchNextUserPage}
-            refetch={refetchUsers}
-            hasNextPage={hasUserNextPage}
-          />
-        ) : (
-          <PostFeed
-            posts={postResults}
-            loading={isPostLoading || isPostFetchingNextPage}
-            error={isPostLoadingError || isPostFetchNextPageError}
-            fetchNextPage={fetchNextPostPage}
-            refetch={refetchPosts}
-            hasNextPage={hasPostNextPage}
-          />
-        )}
-      </div>
-      {(params?.tab === "people"
-        ? rawUserResults?.pages[0]?.users
-        : rawPostResults?.pages[0]?.results
-      )?.length === 0 && (
-        <article className="flex max-w-[450px] flex-col gap-3 p-9">
-          <p className="text-3xl font-black">
-            No results for {`"${params?.query}"`}
-          </p>
-          <p className="text-muted-foreground text-base">
-            Try searching for something else, or check if you made a mistake in
-            your query.
-          </p>
-        </article>
-      )}
-    </div>
+  return tab === "people" ? (
+    <UserSearch query={query} following={following} maxResults={15} />
+  ) : (
+    <PostSearch
+      sortBy={tab}
+      maxResults={15}
+      {...{
+        query,
+        following,
+        from,
+        to,
+        minLikes,
+        minReplies,
+        reply,
+        since,
+        until,
+      }}
+    />
   );
 }

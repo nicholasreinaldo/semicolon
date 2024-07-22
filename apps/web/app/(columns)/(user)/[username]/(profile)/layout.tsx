@@ -24,7 +24,7 @@ export default async function Page({
       - https://github.com/vercel/next.js/discussions/64435#discussioncomment-9101547 
       - https://github.com/vercel/next.js/issues/64441 */}
       <ScrollTop />
-      <BackHeader>
+      <BackHeader className="backdrop-blur-md">
         <article className="flex flex-col">
           <p className="text-xl font-semibold">{user.name}</p>
           <p className="text-muted-foreground text-xs">

@@ -37,7 +37,7 @@ export function ProfileIndicator({
         >
           <div className="flex flex-row gap-3">
             <Avatar className="size-11">
-              {image && <AvatarImage src={image} />}
+              {image && <AvatarImage src={image} alt="User's avatar" />}
               <AvatarFallback>
                 <User />
               </AvatarFallback>

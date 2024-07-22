@@ -1,68 +1,33 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@semicolon/ui/avatar";
-import { Button } from "@semicolon/ui/button";
+import UserCard from "./user-card";
+import { createCaller } from "@semicolon/api";
+import { auth } from "@semicolon/auth";
 import { Card, CardContent, CardFooter, CardHeader } from "@semicolon/ui/card";
-import { BadgeCheck, User } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-const suggestions = [
-  {
-    name: "Rio Triadi",
-    username: "superiot",
-    avatar: "https://avatars.githubusercontent.com/u/29686170",
-  },
-  {
-    name: "La Ode",
-    username: "L.0de",
-    avatar: "https://avatars.githubusercontent.com/u/64969059",
-  },
-  {
-    name: "Fathan F",
-    username: "a-really-long-ass-username",
-    avatar:
-      "https://ipfs.io/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/611.jpg",
-  },
-];
+export async function Suggestions() {
+  const session = await auth();
+  const caller = createCaller({ session });
+  const { users } = await caller.feed.user({ maxResults: 3 });
 
-export function Suggestions() {
   return (
-    <Card>
-      <CardHeader>You might like</CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-6">
-          {suggestions.map((user) => (
-            <div
-              key={user.username}
-              className="flex items-center justify-between gap-3"
-            >
-              <div className="flex min-w-0">
-                <Avatar className="size-11">
-                  <AvatarImage width={300} height={300} src={user.avatar} />
-                  <AvatarFallback>
-                    <User />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex min-w-0 flex-col pl-2">
-                  <span className="flex flex-row items-center gap-2 text-base font-bold">
-                    <p className="truncate">{user.name}</p>
-                    <BadgeCheck className="size-5 flex-none stroke-sky-400" />
-                  </span>
-                  <p className="text-muted-foreground truncate text-sm">
-                    @{user.username}
-                  </p>
-                </div>
-              </div>
-              <Button
-                type="submit"
-                className="cursor-pointer rounded-full font-bold text-black"
-              >
-                Follow
-              </Button>
-            </div>
+    <Card className="rounded-2xl">
+      <CardHeader className="pb-1 pt-4 text-lg font-black">
+        Who to follow
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="flex flex-col">
+          {users.map((user) => (
+            <UserCard
+              key={user.id}
+              displayBio={false}
+              variant="tight"
+              {...user}
+            />
           ))}
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="mt-3">
         <Link href="#" className="text-sm text-sky-400 hover:underline">
           Show more
         </Link>

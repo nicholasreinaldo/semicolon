@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@semicolon/ui/dropdown-menu";
 import { useAtom } from "jotai";
-import { useSetAtom } from "jotai";
 import { Ellipsis, Flag, Pencil, Trash2, UserPlus, UserX } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -30,11 +29,11 @@ export function PostDropdown({
   const [openEdit, setOpenEdit] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
   const { data: session } = useSession();
-  const setMyPosts = useSetAtom(myPostsAtom);
+  const [myPosts, setMyPosts] = useAtom(myPostsAtom);
   const utils = trpc.useUtils();
   const deletePost = trpc.post.delete.useMutation({
     onSuccess: async ({ parentId }, { id }) => {
-      setMyPosts((myPosts) => myPosts.filter((post) => post.id !== id));
+      setMyPosts(myPosts.filter((post) => post.id !== id));
       await utils.post.search.invalidate();
       if (parentId) {
         await utils.post.replies.invalidate();
@@ -43,6 +42,10 @@ export function PostDropdown({
       await utils.user.replies.invalidate({ username });
     },
   });
+
+  useEffect(() => {
+    setOpenDropdown(openEdit);
+  }, [openEdit, setOpenDropdown]);
 
   const [follows, updateFollows] = useAtom(followsAtom);
 
@@ -59,7 +62,9 @@ export function PostDropdown({
       updateFollows((follows) => {
         follows[username] = true;
       });
-      await utils.feed.following.refetch();
+      await utils.feed.following.invalidate();
+      await utils.post.search.invalidate();
+      await utils.user.search.invalidate();
     },
   });
 
@@ -68,7 +73,9 @@ export function PostDropdown({
       updateFollows((follows) => {
         follows[username] = false;
       });
-      await utils.feed.following.refetch();
+      await utils.feed.following.invalidate();
+      await utils.post.search.invalidate();
+      await utils.user.search.invalidate();
     },
   });
 
@@ -81,6 +88,7 @@ export function PostDropdown({
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Post dropdown"
           className="aspect-square size-fit rounded-full p-2"
         >
           <Ellipsis className="flex-none" size={19} />
@@ -115,10 +123,7 @@ export function PostDropdown({
                 <PostForm
                   avatar={session?.user?.image}
                   className="min-h-[230px]"
-                  onPost={() => {
-                    setOpenEdit(false);
-                    setOpenDropdown(false);
-                  }}
+                  onPost={() => setOpenEdit(false)}
                   editData={{
                     id,
                     content: content ?? undefined,

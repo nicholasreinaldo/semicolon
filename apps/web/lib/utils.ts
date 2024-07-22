@@ -8,6 +8,10 @@ export function getBaseUrl() {
     return "";
   }
 
+  if (process.env.DEPLOYMENT_URL) {
+    return `https://${process.env.DEPLOYMENT_URL}`;
+  }
+
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
