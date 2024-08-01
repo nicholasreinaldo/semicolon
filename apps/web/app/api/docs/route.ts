@@ -11,4 +11,5 @@ export const GET = ApiReference({
       baseUrl: `${getBaseUrl()}/api`,
     }),
   },
+  darkMode: true,
 });

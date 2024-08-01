@@ -16,6 +16,21 @@ const nextConfig = {
       },
     ],
   },
+  headers() {
+    return process.env.NODE_ENV === "production"
+      ? [
+          {
+            source: "/api/:path*",
+            headers: [
+              {
+                key: "Access-Control-Allow-Origin",
+                value: `https://www.${process.env.DEPLOYMENT_URL}`,
+              },
+            ],
+          },
+        ]
+      : [];
+  },
 };
 
 export default nextConfig;
